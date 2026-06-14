@@ -1,0 +1,25 @@
+services:
+  openhands:
+    image: docker.openhands.dev/openhands/openhands:${OPENHANDS_VERSION:-latest}
+    container_name: openhands-app
+    pull_policy: always
+    entrypoint: ["/bin/bash", "/patch/entrypoint-wrap.sh"]
+    command: ["uvicorn", "openhands.server.listen:app", "--host", "0.0.0.0", "--port", "3000"]
+    environment:
+      LOG_ALL_EVENTS: "true"
+      DOCKER_CLIENT_TIMEOUT: "${DOCKER_CLIENT_TIMEOUT:-300}"
+      SANDBOX_STARTUP_GRACE_SECONDS: "${SANDBOX_STARTUP_GRACE_SECONDS:-300}"
+      SANDBOX_VOLUMES: >-
+        ${TCP_REPO:-/home/vib/code/tradechefpro/tcp}:/workspace:rw,
+        ${RUNTIME_DIR:-/home/vib/code/pocs/openhands-poc/runtime}/conversations:/workspace/conversations:rw,
+        ${RUNTIME_DIR:-/home/vib/code/pocs/openhands-poc/runtime}/bash_events:/workspace/bash_events:rw
+      SANDBOX_USER_ID: ${SANDBOX_USER_ID:-1000}
+    ports:
+      - "3000:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${OPENHANDS_STATE_DIR:-/home/vib/.openhands}:/.openhands
+      - ./patch:/patch:ro
+    restart: unless-stopped
