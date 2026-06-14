@@ -23,7 +23,12 @@ cd /home/vib/code/pocs/openhands-poc
 
 `start-tcp.sh` runs `setup-workspace.sh` automatically.
 
-Open http://localhost:3000 and configure an LLM provider + API key in Settings.
+Open http://192.168.1.111:3000 (or set `OPENHANDS_LAN_HOST` in `.env`) and configure an
+LLM provider + API key in Settings.
+
+**Important:** If you browse from a laptop/phone on the LAN, `OPENHANDS_LAN_HOST` must
+be this server's IP — not `localhost`. Otherwise the chat panel spins forever loading
+the agent (it tries `localhost:<random-port>` on your client).
 
 To mount a different repo:
 
@@ -61,8 +66,10 @@ and runtime dirs.
 
 **UI stuck on Loading…**
 
-Usually a failed start task. Go home → **new conversation** (don't reopen ERROR
-tasks). Skip GitHub repo picker — tcp is already at `/workspace`.
+1. Confirm `.env` has the correct `OPENHANDS_LAN_HOST` (server IP, not localhost).
+2. Go home → **new conversation** (don't reopen ERROR tasks like `61523414…`).
+3. Skip GitHub repo picker — tcp is already at `/workspace`.
+4. Restart after config changes: `./stop.sh && ./start-tcp.sh`
 
 **First conversation is slow**
 

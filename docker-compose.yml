@@ -9,13 +9,14 @@ services:
       LOG_ALL_EVENTS: "true"
       DOCKER_CLIENT_TIMEOUT: "${DOCKER_CLIENT_TIMEOUT:-300}"
       SANDBOX_STARTUP_GRACE_SECONDS: "${SANDBOX_STARTUP_GRACE_SECONDS:-300}"
-      SANDBOX_VOLUMES: >-
-        ${TCP_REPO:-/home/vib/code/tradechefpro/tcp}:/workspace:rw,
-        ${RUNTIME_DIR:-/home/vib/code/pocs/openhands-poc/runtime}/conversations:/workspace/conversations:rw,
-        ${RUNTIME_DIR:-/home/vib/code/pocs/openhands-poc/runtime}/bash_events:/workspace/bash_events:rw
+      # Browser on another machine must reach agent ports on the LAN IP, not localhost.
+      SANDBOX_CONTAINER_URL_PATTERN: "http://${OPENHANDS_LAN_HOST:-192.168.1.111}:{port}"
+      SANDBOX_HOST_PORT: "${OPENHANDS_WEB_PORT:-3000}"
+      PERMITTED_CORS_ORIGINS: "http://${OPENHANDS_LAN_HOST:-192.168.1.111}:${OPENHANDS_WEB_PORT:-3000},http://localhost:${OPENHANDS_WEB_PORT:-3000}"
+      SANDBOX_VOLUMES: "${TCP_REPO:-/home/vib/code/tradechefpro/tcp}:/workspace:rw,${RUNTIME_DIR:-/home/vib/code/pocs/openhands-poc/runtime}/conversations:/workspace/conversations:rw,${RUNTIME_DIR:-/home/vib/code/pocs/openhands-poc/runtime}/bash_events:/workspace/bash_events:rw"
       SANDBOX_USER_ID: ${SANDBOX_USER_ID:-1000}
     ports:
-      - "3000:3000"
+      - "${OPENHANDS_WEB_PORT:-3000}:3000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:

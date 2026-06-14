@@ -24,8 +24,13 @@ fi
 "${SCRIPT_DIR}/setup-workspace.sh"
 mkdir -p "${OPENHANDS_STATE_DIR}"
 
+OPENHANDS_LAN_HOST="${OPENHANDS_LAN_HOST:-192.168.1.111}"
+OPENHANDS_WEB_PORT="${OPENHANDS_WEB_PORT:-3000}"
+export OPENHANDS_LAN_HOST OPENHANDS_WEB_PORT
+
 echo "openhands-poc: mounting ${TCP_REPO} -> /workspace"
-echo "openhands-poc: UI at http://localhost:3000"
+echo "openhands-poc: UI at http://${OPENHANDS_LAN_HOST}:${OPENHANDS_WEB_PORT}"
+echo "openhands-poc: agent URLs use http://${OPENHANDS_LAN_HOST}:<port> (set OPENHANDS_LAN_HOST in .env if wrong)"
 
 if [[ -t 1 ]]; then
   cd "${TCP_REPO}"
